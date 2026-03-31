@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HoopFit — Offseason Training</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #13161e;
+    --surface2: #1c2030;
+    --border: #252a38;
+    --accent: #f97316;
+    --accent2: #3b82f6;
+    --accent3: #22c55e;
+    --accent4: #a855f7;
+    --text: #eef0f6;
+    --muted: #6b7280;
+    --danger: #ef4444;
+    --gold: #eab308;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── TOP NAV ─── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,12,16,.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    display: flex; align-items: center; gap: 16px;
+    height: 58px;
+  }
+  .logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 1.5rem;
+    letter-spacing: .04em;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .logo span { color: var(--text); }
+
+  nav { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
+  nav button {
+    background: none; border: none; cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600; font-size: .9rem;
+    letter-spacing: .06em; text-transform: uppercase;
+    color: var(--muted);
+    padding: 6px 12px; border-radius: 6px;
+    transition: all .2s;
+  }
+  nav button:hover { color: var(--text); background: var(--surface2); }
+  nav button.active { color: var(--accent); background: rgba(249,115,22,.12); }
+
+  /* ─── MAIN LAYOUT ─── */
+  main { max-width: 900px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ─── WEEK STRIP ─── */
+  .week-strip {
+    display: grid; grid-template-columns: repeat(7,1fr);
+    gap: 6px; margin-bottom: 28px;
+  }
+  .day-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .day-pill:hover { border-color: var(--accent); }
+  .day-pill.active { border-color: var(--accent); background: rgba(249,115,22,.13); }
+  .day-pill.rest-day { border-color: var(--accent3); background: rgba(34,197,94,.06); }
+  .day-pill.rest-day.active { background: rgba(34,197,94,.18); }
+  .day-pill .day-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: .75rem;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .day-pill.active .day-label { color: var(--accent); }
+  .day-pill.rest-day .day-label { color: var(--accent3); }
+  .day-pill .day-icons { font-size: .85rem; margin-top: 4px; }
+
+  /* ─── SECTION CARD ─── */
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .section-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px;
+    cursor: pointer;
+    user-select: none;
+    transition: background .15s;
+  }
+  .section-header:hover { background: var(--surface2); }
+  .section-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+  }
+  .section-meta { flex: 1; }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 1.05rem;
+    letter-spacing: .04em; text-transform: uppercase;
+  }
+  .section-sub {
+    font-size: .78rem; color: var(--muted); margin-top: 1px;
+  }
+  .section-badge {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600; font-size: .75rem;
+    letter-spacing: .08em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 99px;
+    background: var(--surface2); color: var(--muted);
+  }
+  .chevron { font-size: .8rem; color: var(--muted); transition: transform .2s; }
+  .section-card.open .chevron { transform: rotate(180deg); }
+
+  .section-body { display: none; padding: 0 18px 18px; }
+  .section-card.open .section-body { display: block; }
+
+  .why-box {
+    background: var(--surface2);
+    border-left: 3px solid var(--accent2);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    font-size: .82rem; color: #a0b0cc; line-height: 1.55;
+    margin-bottom: 14px;
+  }
+  .why-box strong { color: var(--accent2); font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; }
+
+  /* ─── DRILL LIST ─── */
+  .drill-list { display: flex; flex-direction: column; gap: 10px; }
+  .drill {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .drill-check {
+    width: 22px; height: 22px; border-radius: 6px;
+    border: 2px solid var(--border);
+    flex-shrink: 0; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s; margin-top: 1px;
+  }
+  .drill-check.checked { background: var(--accent3); border-color: var(--accent3); }
+  .drill-check.checked::after { content: '✓'; color: #fff; font-size: .75rem; font-weight: 700; }
+  .drill-info { flex: 1; min-width: 0; }
+  .drill-name {
+    font-weight: 500; font-size: .9rem; line-height: 1.3;
+  }
+  .drill-detail {
+    font-size: .78rem; color: var(--muted); margin-top: 3px; line-height: 1.4;
+  }
+  .drill-link {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: .75rem; color: var(--accent);
+    text-decoration: none; margin-top: 5px;
+    padding: 3px 8px; border-radius: 5px;
+    border: 1px solid rgba(249,115,22,.3);
+    transition: all .15s;
+  }
+  .drill-link:hover { background: rgba(249,115,22,.15); border-color: var(--accent); }
+
+  /* ─── REST DAY CARD ─── */
+  .rest-card {
+    background: linear-gradient(135deg, rgba(34,197,94,.08), rgba(34,197,94,.03));
+    border: 1px solid rgba(34,197,94,.3);
+    border-radius: 14px; padding: 28px;
+    text-align: center;
+  }
+  .rest-card h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 2rem;
+    color: var(--accent3); letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .rest-card p { color: #a0c0a8; font-size: .9rem; line-height: 1.6; margin-top: 8px; }
+  .rest-tasks {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    justify-content: center; margin-top: 16px;
+  }
+  .rest-tag {
+    background: rgba(34,197,94,.12);
+    border: 1px solid rgba(34,197,94,.25);
+    border-radius: 99px; padding: 5px 14px;
+    font-size: .82rem; color: var(--accent3);
+  }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-wrap { margin-bottom: 24px; }
+  .progress-label {
+    display: flex; justify-content: space-between;
+    font-size: .8rem; color: var(--muted); margin-bottom: 6px;
+  }
+  .progress-bar {
+    height: 6px; background: var(--surface2);
+    border-radius: 99px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--accent), #fb923c);
+    border-radius: 99px; transition: width .4s ease;
+  }
+
+  /* ─── PAGE VIEWS ─── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ─── BREATHING PAGE ─── */
+  .breath-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media(max-width:560px){ .breath-grid{ grid-template-columns:1fr; } }
+  .breath-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px;
+    cursor: pointer; transition: all .2s;
+    text-align: center;
+  }
+  .breath-card:hover { border-color: var(--accent4); transform: translateY(-2px); }
+  .breath-card h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 1.1rem;
+    text-transform: uppercase; letter-spacing: .06em;
+    color: var(--accent4); margin-bottom: 6px;
+  }
+  .breath-card p { font-size: .82rem; color: var(--muted); line-height: 1.5; }
+  .breath-card .pattern { font-size: .75rem; color: var(--accent4); margin-top: 8px; font-weight: 500; }
+
+  .breath-timer {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px; padding: 36px 24px;
+    text-align: center; margin-bottom: 20px;
+    display: none;
+  }
+  .breath-timer.active { display: block; }
+  .breath-circle {
+    width: 150px; height: 150px; border-radius: 50%;
+    margin: 0 auto 20px;
+    background: radial-gradient(circle, rgba(168,85,247,.25), rgba(168,85,247,.05));
+    border: 3px solid var(--accent4);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    transition: transform 1s ease, box-shadow 1s ease;
+  }
+  .breath-circle.inhale { transform: scale(1.25); box-shadow: 0 0 40px rgba(168,85,247,.35); }
+  .breath-circle.exhale { transform: scale(.85); box-shadow: 0 0 10px rgba(168,85,247,.1); }
+  .breath-circle.hold { transform: scale(1.25); box-shadow: 0 0 50px rgba(168,85,247,.5); }
+  .breath-phase {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 1.3rem;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--accent4);
+  }
+  .breath-count { font-size: 2rem; font-weight: 300; color: var(--text); }
+  .breath-rounds { font-size: .85rem; color: var(--muted); margin-bottom: 16px; }
+  .btn {
+    background: var(--accent); color: #fff;
+    border: none; cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 1rem;
+    letter-spacing: .08em; text-transform: uppercase;
+    padding: 10px 24px; border-radius: 8px;
+    transition: all .15s;
+  }
+  .btn:hover { background: #ea6c10; transform: translateY(-1px); }
+  .btn.ghost {
+    background: none; color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn.ghost:hover { color: var(--text); border-color: var(--text); }
+
+  /* ─── OVERVIEW PAGE ─── */
+  .overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+  @media(max-width:560px){ .overview-grid{ grid-template-columns:1fr; } }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px;
+  }
+  .stat-card .stat-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 2.2rem;
+    line-height: 1;
+  }
+  .stat-card .stat-label { font-size: .8rem; color: var(--muted); margin-top: 4px; }
+  .principle-list { display: flex; flex-direction: column; gap: 10px; }
+  .principle {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .principle-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+  .principle-text h4 { font-size: .92rem; font-weight: 500; margin-bottom: 3px; }
+  .principle-text p { font-size: .8rem; color: var(--muted); line-height: 1.5; }
+
+  /* ─── TOAST ─── */
+  #toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--accent3); color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    font-size: .9rem; padding: 10px 20px; border-radius: 99px;
+    transition: transform .3s ease; z-index: 999;
+    pointer-events: none;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ─── DAILY HABITS ─── */
+  .habits-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 18px;
+    margin-bottom: 20px;
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  }
+  .habits-bar span {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: .8rem; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--muted);
+    flex-shrink: 0;
+  }
+  .habit-chip {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 99px; padding: 5px 12px;
+    font-size: .8rem; cursor: pointer;
+    transition: all .15s;
+  }
+  .habit-chip:hover { border-color: var(--accent); }
+  .habit-chip.done { background: rgba(34,197,94,.12); border-color: var(--accent3); color: var(--accent3); }
+  .habit-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); }
+  .habit-chip.done .habit-dot { background: var(--accent3); }
+
+  @media(max-width: 480px){
+    .week-strip { gap: 4px; }
+    .day-pill .day-label { font-size: .65rem; }
+  }
+
+  /* ─── ONBOARDING OVERLAY ─── */
+  #onboarding {
+    position: fixed; inset: 0; z-index: 999;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  #onboarding.hidden { display: none; }
+  .ob-card {
+    max-width: 420px; width: 100%;
+    text-align: center;
+  }
+  .ob-ball {
+    font-size: 4rem; margin-bottom: 16px;
+    animation: bounce 1.6s infinite ease-in-out;
+  }
+  @keyframes bounce {
+    0%,100%{ transform: translateY(0); }
+    50%{ transform: translateY(-12px); }
+  }
+  .ob-logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 3rem;
+    letter-spacing: .04em;
+    color: var(--accent); margin-bottom: 6px;
+  }
+  .ob-logo span { color: var(--text); }
+  .ob-tagline {
+    font-size: .9rem; color: var(--muted);
+    line-height: 1.6; margin-bottom: 32px;
+  }
+  .ob-steps {
+    display: flex; flex-direction: column; gap: 12px;
+    margin-bottom: 32px; text-align: left;
+  }
+  .ob-step {
+    display: flex; gap: 14px; align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px;
+  }
+  .ob-step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(249,115,22,.15);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: .95rem;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ob-step-text h4 { font-size: .9rem; font-weight: 500; margin-bottom: 3px; }
+  .ob-step-text p { font-size: .78rem; color: var(--muted); line-height: 1.45; }
+  .ob-input-wrap { margin-bottom: 16px; }
+  .ob-input-wrap label {
+    display: block; font-size: .8rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .08em;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600; margin-bottom: 8px;
+  }
+  .ob-input-wrap input {
+    width: 100%; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 10px;
+    color: var(--text); font-family: 'DM Sans', sans-serif;
+    font-size: 1rem; padding: 12px 16px;
+    outline: none; transition: border-color .2s;
+    text-align: center;
+  }
+  .ob-input-wrap input:focus { border-color: var(--accent); }
+  .ob-input-wrap input::placeholder { color: var(--muted); }
+  .btn-full { width: 100%; padding: 14px; font-size: 1.1rem; border-radius: 10px; }
+
+  /* greeting in header */
+  .header-name {
+    font-size: .8rem; color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: .06em; text-transform: uppercase;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 120px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── ONBOARDING ─── -->
+<div id="onboarding">
+  <div class="ob-card">
+    <div class="ob-ball">🏀</div>
+    <div class="ob-logo">Hoop<span>Fit</span></div>
+    <p class="ob-tagline">Your offseason training companion.<br>Built for serious basketball players.</p>
+
+    <div class="ob-steps">
+      <div class="ob-step">
+        <div class="ob-step-num">1</div>
+        <div class="ob-step-text">
+          <h4>Open every day</h4>
+          <p>The app loads on today's schedule automatically. No thinking required — just follow the checklist.</p>
+        </div>
+      </div>
+      <div class="ob-step">
+        <div class="ob-step-num">2</div>
+        <div class="ob-step-text">
+          <h4>Check off your drills</h4>
+          <p>Each session has YouTube demos, timing, and a clear reason why you're doing it when you're doing it.</p>
+        </div>
+      </div>
+      <div class="ob-step">
+        <div class="ob-step-num">3</div>
+        <div class="ob-step-text">
+          <h4>Add to your home screen</h4>
+          <p>Tap Share → Add to Home Screen (iPhone) or Menu → Add to Home Screen (Android) so it's always one tap away.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ob-input-wrap">
+      <label>What's your first name?</label>
+      <input type="text" id="nameInput" placeholder="e.g. Maya" maxlength="20"
+        onkeydown="if(event.key==='Enter') finishOnboarding()">
+    </div>
+    <button class="btn btn-full" onclick="finishOnboarding()">Let's Get to Work →</button>
+  </div>
+</div>
+
+<header>
+  <div class="logo">Hoop<span>Fit</span></div>
+  <div class="header-name" id="headerName"></div>
+  <nav>
+    <button class="active" onclick="showView('schedule')">Schedule</button>
+    <button onclick="showView('breathwork')">Breathwork</button>
+    <button onclick="showView('overview')">Overview</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ─── SCHEDULE VIEW ─── -->
+  <div class="view active" id="view-schedule">
+
+    <div class="week-strip" id="weekStrip"></div>
+
+    <!-- Daily Habits Bar -->
+    <div class="habits-bar">
+      <span>Daily Habits</span>
+      <div class="habit-chip" onclick="toggleHabit(this)" data-id="water">
+        <div class="habit-dot"></div>💧 Hydrate (64oz+)
+      </div>
+      <div class="habit-chip" onclick="toggleHabit(this)" data-id="sleep">
+        <div class="habit-dot"></div>😴 8–9 hrs Sleep
+      </div>
+      <div class="habit-chip" onclick="toggleHabit(this)" data-id="protein">
+        <div class="habit-dot"></div>🥩 Protein Goal
+      </div>
+      <div class="habit-chip" onclick="toggleHabit(this)" data-id="journal">
+        <div class="habit-dot"></div>📝 1-Min Journal
+      </div>
+    </div>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-label">
+        <span>Today's Progress</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+
+    <div id="dayContent"></div>
+  </div>
+
+  <!-- ─── BREATHWORK VIEW ─── -->
+  <div class="view" id="view-breathwork">
+    <div class="breath-timer" id="breathTimer">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px" id="breathName"></div>
+      <div class="breath-circle" id="breathCircle">
+        <div class="breath-phase" id="breathPhase">Ready</div>
+        <div class="breath-count" id="breathCount">—</div>
+      </div>
+      <div class="breath-rounds" id="breathRounds"></div>
+      <button class="btn ghost" onclick="stopBreath()">Stop</button>
+    </div>
+
+    <h2 style="font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">Nervous System &amp; Breathwork</h2>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:20px">Tap a protocol to start a guided session.</p>
+
+    <div class="breath-grid" id="breathGrid"></div>
+
+    <div style="margin-top:28px">
+      <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;color:var(--muted)">Nervous System Resources</h3>
+      <div class="drill-list">
+        <div class="drill">
+          <div class="drill-info">
+            <div class="drill-name">Physiological Sigh (Quick Reset)</div>
+            <div class="drill-detail">Double inhale through nose, long exhale through mouth. Best for instant calm pre-game or post-hard-drill. Takes 10 seconds.</div>
+            <a class="drill-link" href="https://www.youtube.com/results?search_query=physiological+sigh+breathing+technique" target="_blank">▶ Watch on YouTube</a>
+          </div>
+        </div>
+        <div class="drill">
+          <div class="drill-info">
+            <div class="drill-name">Cold Exposure (Optional)</div>
+            <div class="drill-detail">30–60 sec cold shower ending = dopamine spike + HRV improvement. Do in the morning on heavy training days.</div>
+            <a class="drill-link" href="https://www.youtube.com/results?search_query=cold+shower+benefits+athlete+recovery" target="_blank">▶ Watch on YouTube</a>
+          </div>
+        </div>
+        <div class="drill">
+          <div class="drill-info">
+            <div class="drill-name">Body Scan (Pre-Sleep)</div>
+            <div class="drill-detail">5 min progressive muscle relaxation starting at feet. Activates parasympathetic, accelerates recovery and sleep onset.</div>
+            <a class="drill-link" href="https://www.youtube.com/results?search_query=body+scan+progressive+muscle+relaxation+sleep" target="_blank">▶ Watch on YouTube</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── OVERVIEW VIEW ─── -->
+  <div class="view" id="view-overview">
+    <h2 style="font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:20px">Program Overview</h2>
+
+    <div class="overview-grid">
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--accent)">5</div>
+        <div class="stat-label">Training days / week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--accent3)">2</div>
+        <div class="stat-label">Full rest / recovery days</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--accent2)">~45</div>
+        <div class="stat-label">Min/day (non-basketball)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--accent4)">4</div>
+        <div class="stat-label">Focus areas</div>
+      </div>
+    </div>
+
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:1rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px">Program Principles</h3>
+    <div class="principle-list">
+      <div class="principle">
+        <div class="principle-icon">🌅</div>
+        <div class="principle-text">
+          <h4>Morning = Activation</h4>
+          <p>Mobility, stretching, and nervous system work happen before school. Cortisol is naturally high — use it. This sets the body up for a productive practice.</p>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="principle-icon">🏀</div>
+        <div class="principle-text">
+          <h4>Pre-Practice = Priming</h4>
+          <p>Short plyometric and activation blocks (10–15 min) right before practice increase fast-twitch fiber recruitment. Science shows this elevates performance for 30–90 min.</p>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="principle-icon">🌙</div>
+        <div class="principle-text">
+          <h4>Evening = Recovery</h4>
+          <p>Foam rolling and myofascial work are more effective after the body has been working all day. Post-practice rolling reduces DOMS and speeds tissue repair.</p>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="principle-icon">💤</div>
+        <div class="principle-text">
+          <h4>Rest Days Are Built In</h4>
+          <p>Sun + Wed are intentional off days. Adaptation happens during rest, not training. ADHD brains especially benefit from scheduled decompression.</p>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="principle-icon">🧠</div>
+        <div class="principle-text">
+          <h4>Structure Over Willpower</h4>
+          <p>This app replaces decision fatigue with a clear checklist. You don't need to remember what to do — just open the app and follow the day.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px">
+      <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:1rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px">Weekly Schedule At a Glance</h3>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:.85rem">
+        <div style="display:grid;grid-template-columns:80px 1fr;gap:10px"><span style="color:var(--accent);font-weight:600">Mon</span><span>Stretch + Strength (Lower Body)</span></div>
+        <div style="display:grid;grid-template-columns:80px 1fr;gap:10px"><span style="color:var(--accent);font-weight:600">Tue</span><span>Stretch + Plyometrics + Myofascial</span></div>
+        <div style="display:grid;grid-template-columns:80px 1fr;gap:10px"><span style="color:var(--accent3);font-weight:600">Wed</span><span>REST — Breathwork + Walk only</span></div>
+        <div style="display:grid;grid-template-columns:80px 1fr;gap:10px"><span style="color:var(--accent);font-weight:600">Thu</span><span>Stretch + Strength (Lower Body)</span></div>
+        <div style="display:grid;grid-template-columns:80px 1fr;gap:10px"><span style="color:var(--accent);font-weight:600">Fri</span><span>Stretch + Plyometrics + Myofascial</span></div>
+        <div style="display:grid;grid-template-columns:80px 1fr;gap:10px"><span style="color:var(--accent);font-weight:600">Sat</span><span>Full Body Flow + Light Myofascial</span></div>
+        <div style="display:grid;grid-template-columns:80px 1fr;gap:10px"><span style="color:var(--accent3);font-weight:600">Sun</span><span>REST — Full Recovery + Breathwork</span></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div id="toast">✓ Marked Complete!</div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════════════
+
+const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const REST_DAYS = [0, 3]; // Sunday=0, Wednesday=3
+
+const breathProtocols = [
+  {
+    name: 'Box Breathing',
+    desc: 'Nervous system balance. Great before practice or before bed.',
+    pattern: '4s in · 4s hold · 4s out · 4s hold',
+    phases: [{label:'Inhale',dur:4},{label:'Hold',dur:4},{label:'Exhale',dur:4},{label:'Hold',dur:4}],
+    rounds: 6,
+    color: '#a855f7'
+  },
+  {
+    name: '4-7-8 Calm',
+    desc: 'Deep parasympathetic activation. Use post-practice or pre-sleep.',
+    pattern: '4s in · 7s hold · 8s out',
+    phases: [{label:'Inhale',dur:4},{label:'Hold',dur:7},{label:'Exhale',dur:8}],
+    rounds: 4,
+    color: '#3b82f6'
+  },
+  {
+    name: 'Activating Breath',
+    desc: 'Raises energy and focus. 20 quick breaths pre-practice or morning.',
+    pattern: '1s in · 1s out × 20 then hold',
+    phases: [{label:'In',dur:1},{label:'Out',dur:1}],
+    rounds: 20,
+    color: '#f97316',
+    special: 'pump'
+  },
+  {
+    name: 'HRV Coherence',
+    desc: 'Research-backed 5.5 breaths/min. 5 min daily improves HRV & focus.',
+    pattern: '5.5s in · 5.5s out',
+    phases: [{label:'Inhale',dur:5.5},{label:'Exhale',dur:5.5}],
+    rounds: 10,
+    color: '#22c55e'
+  }
+];
+
+const sections = {
+  morning_stretch: {
+    title: 'Morning Stretch & Mobility',
+    icon: '🌅',
+    color: '#f97316',
+    bg: 'rgba(249,115,22,.12)',
+    time: 'Morning · 15–20 min',
+    why: 'Overnight your fascia tightens and your spine compresses slightly. Morning mobility "wakes up" the joint capsules, improves blood flow to muscles, and tells your nervous system you\'re ready to move. For ADHD brains, a physical morning routine also anchors the day with a win before school.',
+    drills: [
+      { name: 'Hip Flexor Lunge Stretch', detail: '3×30s each side — critical for basketball athletes who sit at school all day', link: 'https://www.youtube.com/results?search_query=hip+flexor+lunge+stretch+athlete' },
+      { name: 'Leg Swings (Front/Back + Side/Side)', detail: '2×15 each direction — dynamic warm-up for hip range of motion', link: 'https://www.youtube.com/results?search_query=leg+swings+dynamic+warm+up+basketball' },
+      { name: 'Cat-Cow Spinal Mobility', detail: '2×10 reps — spinal decompression, wakes up core stabilizers', link: 'https://www.youtube.com/results?search_query=cat+cow+spinal+mobility+exercise' },
+      { name: 'World\'s Greatest Stretch', detail: '3 each side — single best full-body mobility move for athletes', link: 'https://www.youtube.com/results?search_query=worlds+greatest+stretch+athlete' },
+      { name: 'Seated Hamstring / Figure-4 Hold', detail: '2×30s each — protects the knees by keeping hamstrings supple', link: 'https://www.youtube.com/results?search_query=seated+hamstring+figure+4+stretch' },
+      { name: 'Ankle Circles + Toe Raises', detail: '2×15 each — ankles are the #1 injury site in basketball; daily maintenance', link: 'https://www.youtube.com/results?search_query=ankle+circles+toe+raises+basketball' },
+    ]
+  },
+  strength: {
+    title: 'Lower Body Strength',
+    icon: '💪',
+    color: '#3b82f6',
+    bg: 'rgba(59,130,246,.12)',
+    time: 'After school · 20–25 min · Mon & Thu',
+    why: 'Lower body strength training 2×/week is the gold standard for reducing ACL and patellar tendon injuries — the most common injuries in teen female basketball players. We focus on glutes, hamstrings, and single-leg stability. These muscles absorb landing forces that would otherwise stress your knees and ankles.',
+    drills: [
+      { name: 'Nordic Hamstring Curl', detail: '3×5–8 reps — #1 evidence-based ACL prevention exercise. Eccentric loading protects ligaments.', link: 'https://www.youtube.com/results?search_query=nordic+hamstring+curl+how+to' },
+      { name: 'Single-Leg Romanian Deadlift', detail: '3×8 each — builds glute/hamstring balance, reduces knee valgus on landings', link: 'https://www.youtube.com/results?search_query=single+leg+romanian+deadlift+form' },
+      { name: 'Bulgarian Split Squat', detail: '3×8 each leg — unilateral quad + glute strength without spinal loading', link: 'https://www.youtube.com/results?search_query=bulgarian+split+squat+form+tutorial' },
+      { name: 'Hip Thrust (Glute Bridge)', detail: '3×12 — glute activation protects the knee. Weak glutes = knee caving on cuts.', link: 'https://www.youtube.com/results?search_query=hip+thrust+glute+bridge+how+to' },
+      { name: 'Lateral Band Walk', detail: '2×15 each direction — hip abductor activation for lateral movement and knee health', link: 'https://www.youtube.com/results?search_query=lateral+band+walk+hip+activation' },
+      { name: 'Single-Leg Calf Raise', detail: '3×12 each — Achilles and peroneal tendon strengthening for jump landing', link: 'https://www.youtube.com/results?search_query=single+leg+calf+raise+exercise' },
+    ]
+  },
+  plyo: {
+    title: 'Plyometrics & Footwork',
+    icon: '⚡',
+    color: '#eab308',
+    bg: 'rgba(234,179,8,.12)',
+    time: '15 min before practice · Tue & Fri',
+    why: 'Plyometrics done 15–30 min pre-practice prime your fast-twitch fibers into a higher state of activation — this is called post-activation potentiation. Your first step becomes quicker, your vertical improves, and your reaction time drops. Over weeks, you\'re literally rewiring how fast your feet communicate with your brain.',
+    drills: [
+      { name: 'Pogo Hops (2-Leg + 1-Leg)', detail: '3×20 — rapid ankle stiffness, foundational foot speed drill', link: 'https://www.youtube.com/results?search_query=pogo+hops+plyometric+basketball' },
+      { name: 'Broad Jump + Stick Landing', detail: '3×5 — horizontal power + deceleration control (change-of-direction base)', link: 'https://www.youtube.com/results?search_query=broad+jump+stick+landing+plyometric' },
+      { name: 'Lateral Bound (Skater Jump)', detail: '3×8 each — lateral explosiveness for defensive slides and drive angles', link: 'https://www.youtube.com/results?search_query=lateral+bound+skater+jump+basketball' },
+      { name: 'Quick-Feet Ladder Drills', detail: '4×through — In-In-Out-Out, Icky Shuffle, Ali Shuffle. Pure footwork coordination.', link: 'https://www.youtube.com/results?search_query=agility+ladder+drills+basketball+footwork' },
+      { name: 'Box Jump (Depth Drop)', detail: '3×5 — reactive strength, teaches safe landing mechanics', link: 'https://www.youtube.com/results?search_query=box+jump+depth+drop+landing+mechanics' },
+      { name: 'Sprint Starts + Crossover Step', detail: '4×10 yd — first-step quickness, attacking angles off the dribble', link: 'https://www.youtube.com/results?search_query=sprint+start+crossover+step+basketball' },
+    ]
+  },
+  myofascial: {
+    title: 'Myofascial Release',
+    icon: '🎯',
+    color: '#22c55e',
+    bg: 'rgba(34,197,94,.12)',
+    time: 'Evening · after practice · 15 min',
+    why: 'Foam rolling and lacrosse ball work break up adhesions in your fascia — the connective tissue wrapping every muscle. After practice your tissue is inflamed and tight. Rolling increases local blood flow, reduces muscle soreness by 30–40%, and keeps the tissue extensible so your flexibility gains from morning stretching actually stick. Do this EVERY practice day.',
+    drills: [
+      { name: 'IT Band + TFL Roll', detail: '60s each side — the IT band gets hammered in basketball. This prevents knee and hip pain.', link: 'https://www.youtube.com/results?search_query=IT+band+foam+roll+how+to' },
+      { name: 'Quad Roll (Foam Roller)', detail: '60s each — reduces patellar tendon stress, critical for jumping athletes', link: 'https://www.youtube.com/results?search_query=quad+foam+rolling+technique' },
+      { name: 'Calf + Soleus Roll', detail: '45s each — prevents plantar fasciitis and Achilles tightness', link: 'https://www.youtube.com/results?search_query=calf+soleus+foam+rolling+athlete' },
+      { name: 'Glute / Piriformis (Lacrosse Ball)', detail: '60s each — releases the deep external rotators, directly relieves low back tightness', link: 'https://www.youtube.com/results?search_query=piriformis+lacrosse+ball+release' },
+      { name: 'Thoracic Spine Extension (T-Spine Roll)', detail: '30s — counteracts the forward slouch from school + device use; opens shooting posture', link: 'https://www.youtube.com/results?search_query=thoracic+spine+foam+rolling+extension' },
+      { name: 'Plantar Fascia (Ball Roll on Foot)', detail: '45s each foot — basketball players step on the ball more than any other sport', link: 'https://www.youtube.com/results?search_query=plantar+fascia+ball+roll+foot+massage' },
+    ]
+  },
+  breathwork_short: {
+    title: 'Breathwork & Reset',
+    icon: '🫁',
+    color: '#a855f7',
+    bg: 'rgba(168,85,247,.12)',
+    time: 'Evening · 5–8 min',
+    why: 'Your nervous system spends all day in sympathetic (fight-or-flight) mode: school stress, practice intensity, screen time. Intentional breathwork shifts you into parasympathetic rest-and-digest mode — this is when your body actually repairs itself. Without this switch, you sleep shallower and recover slower.',
+    drills: [
+      { name: 'Box Breathing (4-4-4-4)', detail: '6 rounds — balances sympathetic/parasympathetic, used by Navy SEALs and elite athletes', link: 'https://www.youtube.com/results?search_query=box+breathing+guided+4+4+4+4', breath: true },
+      { name: '4-7-8 Pre-Sleep', detail: '4 rounds — significantly reduces time to fall asleep, increases slow-wave sleep', link: 'https://www.youtube.com/results?search_query=4+7+8+breathing+guided+sleep', breath: true },
+    ]
+  },
+  evening_stretch: {
+    title: 'Evening Bedtime Stretch',
+    icon: '🌙',
+    color: '#6366f1',
+    bg: 'rgba(99,102,241,.12)',
+    time: 'Bedtime · 10 min',
+    why: 'Stretching before bed when your muscles are warm (post-shower ideally) is when your flexibility gains are most durable. Holding passive stretches 60–90 seconds at night produces structural changes in the muscle-tendon unit over weeks. This is when you actually get longer, more flexible. Do it in your PJs — just get on the floor.',
+    drills: [
+      { name: 'Pigeon Pose (Hip Opener)', detail: '90s each side — deepest hip flexor/external rotator stretch. Do not rush this.', link: 'https://www.youtube.com/results?search_query=pigeon+pose+hip+opener+athlete' },
+      { name: 'Supine Hamstring Stretch (Strap or Towel)', detail: '60s each — lying down allows full relaxation, gets deeper than standing', link: 'https://www.youtube.com/results?search_query=supine+hamstring+stretch+towel+strap' },
+      { name: 'Reclined Butterfly', detail: '90s — opens inner groin and hip adductors, often neglected', link: 'https://www.youtube.com/results?search_query=reclined+butterfly+pose+stretch' },
+      { name: 'Thread-the-Needle (T-spine rotation)', detail: '45s each side — releases upper back rotation restriction', link: 'https://www.youtube.com/results?search_query=thread+the+needle+thoracic+stretch' },
+      { name: 'Legs-Up-The-Wall', detail: '2–3 min — passive recovery pose, reduces lower-leg swelling from practice', link: 'https://www.youtube.com/results?search_query=legs+up+the+wall+recovery+pose' },
+    ]
+  },
+  yoga_flow: {
+    title: 'Saturday Yoga Flow',
+    icon: '🧘',
+    color: '#f97316',
+    bg: 'rgba(249,115,22,.1)',
+    time: 'Morning · 25–30 min',
+    why: 'Saturday is your integration day — not complete rest, not hard training. Yoga flow connects breath to movement, builds body awareness (proprioception) that directly translates to on-court feel, and maintains tissue mobility without adding training stress. This is also mentally restorative.',
+    drills: [
+      { name: 'Sun Salutation A (×3)', detail: 'Full-body warm-up, links breath to movement — foundation of flow yoga', link: 'https://www.youtube.com/results?search_query=sun+salutation+A+tutorial+beginner' },
+      { name: 'Warrior I → II → Reverse Warrior', detail: '3 each side — hip flexor + lateral chain strength, balance', link: 'https://www.youtube.com/results?search_query=warrior+1+2+reverse+warrior+yoga+flow' },
+      { name: 'Low Lunge → Half Splits Transition', detail: '90s per side — psoas and hamstring integrated release', link: 'https://www.youtube.com/results?search_query=low+lunge+half+splits+yoga+transition' },
+      { name: 'Chair Pose Pulses', detail: '2×15 — quad and glute activation within the yoga context', link: 'https://www.youtube.com/results?search_query=chair+pose+pulses+yoga+strength' },
+      { name: 'Supine Spinal Twist', detail: '90s each side — full spine reset, releases lower back compression', link: 'https://www.youtube.com/results?search_query=supine+spinal+twist+yoga+lower+back' },
+      { name: 'Savasana (Conscious Rest)', detail: '3 min — completes the session, parasympathetic activation', link: 'https://www.youtube.com/results?search_query=savasana+guided+relaxation+yoga' },
+    ]
+  }
+};
+
+// Map day-of-week (0=Sun) to section keys
+const daySections = {
+  1: ['morning_stretch', 'strength', 'myofascial', 'breathwork_short', 'evening_stretch'],
+  2: ['morning_stretch', 'plyo', 'myofascial', 'breathwork_short', 'evening_stretch'],
+  4: ['morning_stretch', 'strength', 'myofascial', 'breathwork_short', 'evening_stretch'],
+  5: ['morning_stretch', 'plyo', 'myofascial', 'breathwork_short', 'evening_stretch'],
+  6: ['morning_stretch', 'yoga_flow', 'myofascial', 'breathwork_short', 'evening_stretch'],
+};
+
+// ══════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════
+let today = new Date().getDay();
+let selectedDay = today;
+let completedDrills = JSON.parse(localStorage.getItem('hf_drills') || '{}');
+let completedHabits = JSON.parse(localStorage.getItem('hf_habits') || '{}');
+
+// ══════════════════════════════════════════════════
+//  VIEWS
+// ══════════════════════════════════════════════════
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  if (id === 'breathwork') renderBreathCards();
+}
+
+// ══════════════════════════════════════════════════
+//  WEEK STRIP
+// ══════════════════════════════════════════════════
+function buildWeekStrip() {
+  const strip = document.getElementById('weekStrip');
+  strip.innerHTML = '';
+  for (let d = 0; d < 7; d++) {
+    const isRest = REST_DAYS.includes(d);
+    const isActive = d === selectedDay;
+    const pill = document.createElement('div');
+    pill.className = 'day-pill' + (isRest ? ' rest-day' : '') + (isActive ? ' active' : '');
+    pill.innerHTML = `<div class="day-label">${DAYS[d]}</div><div class="day-icons">${isRest ? '💤' : getDayIcons(d)}</div>`;
+    pill.onclick = () => selectDay(d);
+    strip.appendChild(pill);
+  }
+}
+
+function getDayIcons(d) {
+  const map = {1:'💪🤸',2:'⚡🎯',4:'💪🤸',5:'⚡🎯',6:'🧘🎯'};
+  return map[d] || '🏀';
+}
+
+function selectDay(d) {
+  selectedDay = d;
+  buildWeekStrip();
+  renderDay();
+}
+
+// ══════════════════════════════════════════════════
+//  DAY RENDER
+// ══════════════════════════════════════════════════
+function renderDay() {
+  const container = document.getElementById('dayContent');
+  const key = selectedDay;
+
+  if (REST_DAYS.includes(key)) {
+    const msgs = {
+      0: { title: 'Full Recovery Sunday', msg: 'Your body grew stronger this week. Today is when the adaptation cements. Light walk, breathwork, nutrition, and sleep. No training stress.' },
+      3: { title: 'Mid-Week Reset', msg: 'You\'re halfway through a hard week. Resting now means you hit Thursday and Friday at full capacity. Trust the schedule.' }
+    };
+    const info = msgs[key] || { title: 'Rest Day', msg: 'Recovery is training.' };
+    container.innerHTML = `
+      <div class="rest-card">
+        <div style="font-size:3rem;margin-bottom:8px">💤</div>
+        <h2>${info.title}</h2>
+        <p>${info.msg}</p>
+        <div class="rest-tasks">
+          <span class="rest-tag">🚶 Easy Walk (20–30 min)</span>
+          <span class="rest-tag">🫁 10 min Breathwork</span>
+          <span class="rest-tag">💧 Extra Hydration</span>
+          <span class="rest-tag">🥩 High Protein Meal</span>
+          <span class="rest-tag">😴 9 hrs Sleep</span>
+          <span class="rest-tag">📵 No intense screen time at night</span>
+        </div>
+        <div style="margin-top:20px">
+          <button class="btn" onclick="showView('breathwork');document.querySelectorAll('nav button')[1].classList.add('active');document.querySelectorAll('nav button')[0].classList.remove('active')">Open Breathwork</button>
+        </div>
+      </div>`;
+    updateProgress();
+    return;
+  }
+
+  const keys = daySections[key] || [];
+  let html = '';
+  keys.forEach((sk, i) => {
+    const s = sections[sk];
+    if (!s) return;
+    html += `<div class="section-card" id="sc_${sk}">
+      <div class="section-header" onclick="toggleSection('${sk}')">
+        <div class="section-icon" style="background:${s.bg}">${s.icon}</div>
+        <div class="section-meta">
+          <div class="section-title" style="color:${s.color}">${s.title}</div>
+          <div class="section-sub">${s.time}</div>
+        </div>
+        <div class="section-badge" id="badge_${sk}">${getDrillProgress(sk, s.drills.length)}</div>
+        <div class="chevron">▼</div>
+      </div>
+      <div class="section-body">
+        <div class="why-box"><strong>💡 Why this, when?</strong><br>${s.why}</div>
+        <div class="drill-list">
+          ${s.drills.map((dr, di) => drillHTML(sk, di, dr)).join('')}
+        </div>
+      </div>
+    </div>`;
+  });
+  container.innerHTML = html;
+  if (keys.length > 0) openSection(keys[0]);
+  updateProgress();
+}
+
+function drillHTML(sk, di, dr) {
+  const id = `${sk}_${di}`;
+  const done = completedDrills[id];
+  return `<div class="drill">
+    <div class="drill-check ${done ? 'checked' : ''}" onclick="toggleDrill('${sk}',${di},'${sk}')"></div>
+    <div class="drill-info">
+      <div class="drill-name" style="${done ? 'text-decoration:line-through;opacity:.5' : ''}">${dr.name}</div>
+      <div class="drill-detail">${dr.detail}</div>
+      ${dr.link ? `<a class="drill-link" href="${dr.link}" target="_blank">▶ Watch on YouTube</a>` : ''}
+    </div>
+  </div>`;
+}
+
+function getDrillProgress(sk, total) {
+  let done = 0;
+  const s = sections[sk];
+  if (!s) return `0/${total}`;
+  s.drills.forEach((_, i) => { if (completedDrills[`${sk}_${i}`]) done++; });
+  return `${done}/${total}`;
+}
+
+function toggleSection(sk) {
+  const card = document.getElementById('sc_' + sk);
+  card.classList.toggle('open');
+}
+function openSection(sk) {
+  const card = document.getElementById('sc_' + sk);
+  if (card) card.classList.add('open');
+}
+
+function toggleDrill(sk, di) {
+  const id = `${sk}_${di}`;
+  completedDrills[id] = !completedDrills[id];
+  localStorage.setItem('hf_drills', JSON.stringify(completedDrills));
+  renderDay();
+  if (completedDrills[id]) showToast('✓ Done!');
+}
+
+// ══════════════════════════════════════════════════
+//  HABITS
+// ══════════════════════════════════════════════════
+function toggleHabit(el) {
+  const id = el.dataset.id;
+  const dateKey = new Date().toDateString();
+  const fullId = dateKey + '_' + id;
+  completedHabits[fullId] = !completedHabits[fullId];
+  localStorage.setItem('hf_habits', JSON.stringify(completedHabits));
+  if (completedHabits[fullId]) {
+    el.classList.add('done');
+    showToast('Habit logged!');
+  } else {
+    el.classList.remove('done');
+  }
+  updateProgress();
+}
+
+function restoreHabits() {
+  const dateKey = new Date().toDateString();
+  document.querySelectorAll('.habit-chip').forEach(el => {
+    const fullId = dateKey + '_' + el.dataset.id;
+    if (completedHabits[fullId]) el.classList.add('done');
+  });
+}
+
+// ══════════════════════════════════════════════════
+//  PROGRESS
+// ══════════════════════════════════════════════════
+function updateProgress() {
+  if (REST_DAYS.includes(selectedDay)) {
+    document.getElementById('progressWrap').style.display = 'none';
+    return;
+  }
+  document.getElementById('progressWrap').style.display = 'block';
+  const keys = daySections[selectedDay] || [];
+  let total = 0, done = 0;
+  keys.forEach(sk => {
+    const s = sections[sk];
+    if (!s) return;
+    s.drills.forEach((_, i) => {
+      total++;
+      if (completedDrills[`${sk}_${i}`]) done++;
+    });
+  });
+  const dateKey = new Date().toDateString();
+  ['water','sleep','protein','journal'].forEach(h => {
+    total++;
+    if (completedHabits[dateKey + '_' + h]) done++;
+  });
+  const pct = total ? Math.round(done / total * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+}
+
+// ══════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// ══════════════════════════════════════════════════
+//  BREATHWORK
+// ══════════════════════════════════════════════════
+function renderBreathCards() {
+  const grid = document.getElementById('breathGrid');
+  grid.innerHTML = breathProtocols.map((p, i) => `
+    <div class="breath-card" onclick="startBreath(${i})">
+      <h3 style="color:${p.color}">${p.name}</h3>
+      <p>${p.desc}</p>
+      <div class="pattern">${p.pattern}</div>
+    </div>`).join('');
+}
+
+let breathInterval = null;
+
+function startBreath(idx) {
+  stopBreath();
+  const p = breathProtocols[idx];
+  const timer = document.getElementById('breathTimer');
+  const circle = document.getElementById('breathCircle');
+  const phaseEl = document.getElementById('breathPhase');
+  const countEl = document.getElementById('breathCount');
+  const roundsEl = document.getElementById('breathRounds');
+  const nameEl = document.getElementById('breathName');
+  timer.classList.add('active');
+  nameEl.textContent = p.name;
+
+  let round = 0;
+  let phaseIdx = 0;
+  let secondsLeft = p.phases[0].dur;
+
+  function tick() {
+    const phase = p.phases[phaseIdx];
+    phaseEl.textContent = phase.label;
+    countEl.textContent = Math.ceil(secondsLeft);
+    roundsEl.textContent = `Round ${round + 1} of ${p.rounds}`;
+
+    circle.className = 'breath-circle';
+    if (phase.label === 'Inhale' || phase.label === 'In') circle.classList.add('inhale');
+    else if (phase.label === 'Exhale' || phase.label === 'Out') circle.classList.add('exhale');
+    else circle.classList.add('hold');
+
+    secondsLeft -= .05;
+    if (secondsLeft <= 0) {
+      phaseIdx++;
+      if (phaseIdx >= p.phases.length) {
+        phaseIdx = 0;
+        round++;
+        if (round >= p.rounds) {
+          clearInterval(breathInterval);
+          phaseEl.textContent = 'Done ✓';
+          countEl.textContent = '🌿';
+          circle.className = 'breath-circle';
+          roundsEl.textContent = `Completed ${p.rounds} rounds`;
+          return;
+        }
+      }
+      secondsLeft = p.phases[phaseIdx].dur;
+    }
+  }
+  breathInterval = setInterval(tick, 50);
+}
+
+function stopBreath() {
+  if (breathInterval) clearInterval(breathInterval);
+  document.getElementById('breathTimer').classList.remove('active');
+}
+
+// ══════════════════════════════════════════════════
+//  ONBOARDING
+// ══════════════════════════════════════════════════
+function finishOnboarding() {
+  const input = document.getElementById('nameInput');
+  const name = input.value.trim() || 'Athlete';
+  localStorage.setItem('hf_name', name);
+  showApp(name);
+}
+
+function showApp(name) {
+  document.getElementById('onboarding').classList.add('hidden');
+  const hn = document.getElementById('headerName');
+  hn.textContent = '👋 ' + name;
+  // Personalize day header greeting
+  window._playerName = name;
+}
+
+// ══════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════
+const savedName = localStorage.getItem('hf_name');
+if (savedName) {
+  showApp(savedName);
+} else {
+  // Show onboarding — defer app render until after
+  document.getElementById('onboarding').addEventListener('click', function(e){
+    if(e.target === this) {} // don't dismiss on backdrop tap
+  });
+}
+buildWeekStrip();
+renderDay();
+restoreHabits();
+renderBreathCards();
+</script>
+</body>
+</html>
